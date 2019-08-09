@@ -24,6 +24,6 @@ Open the HTML page of a simple chat demo. The chat includes Typing Indicators po
 
 Click Here for the Live JS Chat Demo with Typing Indicators
 
-** Use Incognito for a 2nd unique user ID **
+**Use Incognito for a 2nd unique user ID**
 
 ![PubNub JS Chat Typing Indicator Demo](https://i.imgur.com/xsqD5Mi.gif)
