@@ -23,3 +23,7 @@ PubNub Signals are meant to include the same reliability and latency as PubNub P
 Open the HTML page of a simple chat demo. The chat includes Typing Indicators powered by PubNub Signals. This will save you money when your chat app is at scale. Using PubNub Publishes for Typing indicators can be expensive at scale, Signals are your cheaper alternative for non-critical real-time messaging.
 
 Click Here for the Live JS Chat Demo with Typing Indicators
+
+** Use Incognito for a 2nd unique user ID **
+
+![PubNub JS Chat Typing Indicator Demo](https://i.imgur.com/xsqD5Mi.gif)
