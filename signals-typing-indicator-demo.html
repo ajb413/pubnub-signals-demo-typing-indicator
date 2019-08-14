@@ -29,46 +29,66 @@
 <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.24.5.min.js"></script>
 <script>
 (function() {
-    var pubnub = new PubNub({ publishKey: 'demo', subscribeKey: 'demo' }); // Your PubNub keys here. Get them from https://dashboard.pubnub.com.
+    const pubnub = new PubNub({ publishKey: 'demo', subscribeKey: 'demo' }); // Your PubNub keys here. Get them from https://dashboard.pubnub.com.
 
-    var box = document.getElementById("box"),
+    let box = document.getElementById("box"),
         input = document.getElementById("input"),
         typingIndicator = document.getElementById("typing-indicator"),
         typingUserId = document.getElementById("typing-user-id");
         chatMessageChannel = 'chat-signals-example',
         timeoutCache = 0,
-        isTyping = 'is-typing';
+        isTyping = false,
+        isTypingChannel = 'is-typing';
 
-    pubnub.subscribe({ channels: [chatMessageChannel, isTyping] }); // Subscribe to a channel.
+    let hideTypingIndicator = () => {
+        isTyping = false;
+        typingIndicator.style = "visibility:hidden;";
+    };
+
+    pubnub.subscribe({ channels: [chatMessageChannel, isTypingChannel] }); // Subscribe to a channel.
 
     pubnub.addListener({
         message: function(m) {
-            typingIndicator.style = "visibility:hidden;"; // When a message has been sent, hide the typing indicator
+            clearTimeout(timeoutCache);
+            hideTypingIndicator(); // When a message has been sent, hide the typing indicator
             box.innerHTML = ('' + m.message).replace(/[<>]/g, '') + '<br>' + box.innerHTML; // Add message to page.
         },
         signal: function(s) {
             clearTimeout(timeoutCache);
             typingIndicator.style = "";
             typingUserId.innerText = s.publisher; // the UUID of the user who is typing
-            timeoutCache = setTimeout(() => {
-                typingIndicator.style = "visibility:hidden;";
-            }, 2000)
+            timeoutCache = setTimeout(hideTypingIndicator, 10000) // 10 seconds
+
+            if (s.message === '0') {
+                hideTypingIndicator();
+            }
         }
     });
 
-    input.addEventListener('keypress', function(e) {
-        if ((e.keyCode || e.charCode) === 13) {
+    input.addEventListener('keyup', function(e) {
+        if ((e.keyCode || e.charCode) === 13 && input.value.length > 0) {
             // Publish new PubNub message when return key is pressed.
             pubnub.publish({
                 channel: chatMessageChannel,
-                message: input.value,
-                x: (input.value = '')
+                message: input.value
             });
-        } else {
-            // Publish new PubNub signal when any other key is pressed.
+
+            input.value = '';
+        }
+
+        if (input.value.length > 0 && !isTyping) {
+            // Publish new PubNub signal: Typing Indicator ON
+            isTyping = true;
             pubnub.signal({
-                channel: isTyping,
-                message: "x"
+                channel: isTypingChannel,
+                message: '1'
+            });
+        } else if (input.value.length === 0 && isTyping) {
+            // Publish new PubNub signal: Typing Indicator OFF
+            isTyping = false;
+            pubnub.signal({
+                channel: isTypingChannel,
+                message: '0'
             });
         }
     });

@@ -12,7 +12,9 @@ Send 32KB or smaller messages to any active subscribers. Publishers can be any d
 
 ## What is a PubNub Signal?
 
-A Signal is the same as a PubNub Publish except it can only be 30 bytes in size or smaller. Signals are not replicated to all global data centers, they can only be delivered to subscribers in a single region. They are not stored in History for a later fetch; only the most recent Signal message can be fetched later. Signals are **cheaper** than Publishes when your app is at scale.
+A Signal is the same as a PubNub Publish except it can only be 30 bytes in size or smaller. Signals are not replicated to all global data centers, they can only be delivered to subscribers in a single region (active in 1 data center).
+
+They are not stored in History for a later fetch; only the most recent Signal message can be fetched later. They do not invoke PubNub Function by default, contact support if you need that functionality. Signals are **cheaper** than Publishes when your app is at scale.
 
 ## Why Use Signal Instead of Publish?
 
