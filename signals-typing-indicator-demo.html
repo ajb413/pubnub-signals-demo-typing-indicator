@@ -66,8 +66,8 @@
     });
 
     input.addEventListener('keyup', function(e) {
+        // Publish new PubNub message when return key is pressed.
         if ((e.keyCode || e.charCode) === 13 && input.value.length > 0) {
-            // Publish new PubNub message when return key is pressed.
             pubnub.publish({
                 channel: chatMessageChannel,
                 message: input.value
@@ -76,19 +76,14 @@
             input.value = '';
         }
 
-        if (input.value.length > 0 && !isTyping) {
-            // Publish new PubNub signal: Typing Indicator ON
-            isTyping = true;
+        const inputHasText = input.value.length > 0;
+
+        // Publish new PubNub signal: Typing Indicator ON (1) or OFF (2)
+        if ((inputHasText && !isTyping) || (!inputHasText && isTyping)) {
+            isTyping = !isTyping;
             pubnub.signal({
                 channel: isTypingChannel,
-                message: '1'
-            });
-        } else if (input.value.length === 0 && isTyping) {
-            // Publish new PubNub signal: Typing Indicator OFF
-            isTyping = false;
-            pubnub.signal({
-                channel: isTypingChannel,
-                message: '0'
+                message: inputHasText ? '1' : '0'
             });
         }
     });
